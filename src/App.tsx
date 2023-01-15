@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import './App.css';
+import AddUser from './components/AddUser';
 import ListUser from './components/ListUser';
 import { fetchUser } from './store/slice/personSlice';
 import { useAppDispatch } from './store/store';
@@ -15,6 +16,8 @@ function App() {
   
   return (
     <div className="App">
+      <h1>Typescript-firebase</h1>
+      <AddUser />
       <ListUser />
     </div>
   );

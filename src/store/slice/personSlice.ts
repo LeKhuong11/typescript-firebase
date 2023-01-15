@@ -29,6 +29,8 @@ export const fetchUser = createAsyncThunk(
     querySnapshot.docs.forEach( doc => {
         users.push({...doc.data(), id: doc.id})
     })
+
+    
     return users;
 })
 
