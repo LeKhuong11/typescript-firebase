@@ -2,10 +2,14 @@ import React, { useState } from "react";
 import { deleteDoc, doc, updateDoc } from "firebase/firestore";
 import { db } from "../firebase/config";
 import { useAppSelector } from "../store/store";
+import { useDispatch } from "react-redux";
+import { deletePerson } from "../store/slice/personSlice";
 
 function ListUser(){
-  const [ showInput, setShowInput] = useState(false);
+  const dispatch = useDispatch();
+  
   const [infoUser, setInfoUser] = useState({
+    id: 0,
     name: '',
     age: ''
   })
@@ -22,22 +26,31 @@ function ListUser(){
 
   const handleDeleteUser = async (id: number, name: string) => {
     const docUser = doc(db, `users/${id}`)
-    await deleteDoc(docUser)
+    try {
+      await deleteDoc(docUser)
+        .then(() => {
+          dispatch(deletePerson({id}))
+        })
+    } catch(err) {
+
+    }
     alert(`Deleted user ${name}`)
   }
 
-  const handleInfoUser =  (e: any) => {
-    const name = e.target.name;
+  const handleChangeInfoUser =  (e: any) => {
+    const nameTag = e.target.name;
     const value = e.target.value;
     setInfoUser(prev => {
       return {
         ...infoUser,
-        [name]: value
+        [nameTag]: value
       }
     })
   }
+  console.log(infoUser);
+  
   return (
-    <div style={{display: 'flex', justifyContent: 'center', marginTop: '2rem'}}>
+    <div style={{marginTop: '2rem'}}>
       <table>
         <thead>
           <tr>
@@ -50,20 +63,20 @@ function ListUser(){
             <tr key={person.id}>
               <td>{person.name}</td>
               <td>{person.age}</td>
-              <td><button onClick={() => setShowInput(!showInput)}>Update</button></td>
+              <td><button onClick={() => setInfoUser({name: person.name, id: person.id, age: person.age})}>Update</button></td>
               <td><button onClick={() => handleDeleteUser(person.id, person.name)}>Delete</button></td>
-              {showInput && (
-                <td>
-                  <input placeholder="Enter Your Name" name="name" onChange={handleInfoUser} /> 
-                  <input placeholder="Enter Your Age" name="age" onChange={handleInfoUser} />
-                  <button onClick={() => handleUpdateUser(person.id, person.name)}>Done</button>
-                </td>
-              )}
             </tr>
           ))}
         </tbody>
       </table>
-    </div>
+      {infoUser.name && (
+        <div>
+          <input defaultValue={infoUser.name} placeholder="Enter Your Name" name="name" onChange={handleChangeInfoUser} /> <br />
+          <input defaultValue={infoUser.age} placeholder="Enter Your Age" name="age" onChange={handleChangeInfoUser} />
+          <button onClick={() => handleUpdateUser(infoUser.id, infoUser.name)}>Done</button>
+        </div>
+      )}
+  </div>
   );
 };
 

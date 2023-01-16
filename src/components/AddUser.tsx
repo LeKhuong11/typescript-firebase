@@ -1,9 +1,11 @@
-import { addDoc, collection, doc, setDoc } from "firebase/firestore";
-import React, { useRef, useState } from "react";
+import { addDoc, collection } from "firebase/firestore";
+import React, { useState } from "react";
+import { useDispatch } from "react-redux";
 import { db } from "../firebase/config";
+import { addPerson } from "../store/slice/personSlice";
 
 function AddUser() {
-
+  const dispatch = useDispatch();
   const [infoUser, setInfoUser] = useState({
     name: '',
     age: ''
@@ -14,6 +16,7 @@ function AddUser() {
       try{
           await addDoc(userCollection, infoUser)
             .then(() => {
+              dispatch(addPerson(infoUser));
               alert('Added user susscessfully!')
             })
         } catch(err) {
@@ -21,7 +24,7 @@ function AddUser() {
         }
   }
   
-  const handleInfoUser =  (e: any) => {
+  const handleChangeInfoUser =  (e: any) => {
     const name = e.target.name;
     const value = e.target.value;
     setInfoUser(prev => {
@@ -34,9 +37,9 @@ function AddUser() {
   
   return (
     <div>
-      <label htmlFor="">Person Name:</label>
-      <input name="name" onChange={handleInfoUser} placeholder="Enter your name!" /> <br />
-      <input name="age" onChange={handleInfoUser} placeholder="Enter your age!" />
+      <label htmlFor="">Person Name:</label> <br />
+      <input name="name" onChange={handleChangeInfoUser} placeholder="Enter your name!" /> <br />
+      <input name="age" onChange={handleChangeInfoUser} placeholder="Enter your age!" />
       <button onClick={handleClickAddUser}> Add User </button>
     </div>
   );

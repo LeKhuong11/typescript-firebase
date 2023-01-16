@@ -24,18 +24,16 @@ export const fetchUser = createAsyncThunk(
     "user/fetch",
     async () => {
     let users: any = [];
-    const querySnapshot = await getDocs(collection(db, "users"));
+    const query = await getDocs(collection(db, "users"));
 
-    querySnapshot.docs.forEach( doc => {
+    query.docs.forEach( doc => {
         users.push({...doc.data(), id: doc.id})
     })
 
-    
     return users;
 })
 
-    
-export const PersonSlice = createSlice({
+export const UserSlice = createSlice({
     name: "person",
     initialState,
     reducers: {
@@ -45,6 +43,12 @@ export const PersonSlice = createSlice({
                 name: action.payload.name,
                 age: action.payload.age,
             })
+        },
+        deletePerson: (state, action: PayloadAction<{ id: number }>) => {
+            const newArrUser = state.persons.filter(user => {
+                return user.id !== action.payload.id;
+            })
+            state.persons = newArrUser;
         }  
     }, 
     extraReducers: (builder) => {
@@ -54,5 +58,5 @@ export const PersonSlice = createSlice({
       }, 
 })
 
-export default PersonSlice;
-export const { addPerson } = PersonSlice.actions;
+export default UserSlice;
+export const { addPerson, deletePerson } = UserSlice.actions;
